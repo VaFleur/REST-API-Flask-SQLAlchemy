@@ -2,7 +2,7 @@ from flask import request, jsonify, Flask
 from sqlalchemy import text
 from werkzeug.security import generate_password_hash
 from sqlalchemy.orm import sessionmaker
-from user import Users, engine
+from model import Users, engine
 
 app = Flask(__name__)
 Session = sessionmaker(bind=engine)
