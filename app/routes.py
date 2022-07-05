@@ -1,9 +1,9 @@
-from flask import request, jsonify, Flask
+from flask import request, jsonify
 from werkzeug.security import generate_password_hash
 from sqlalchemy.orm import sessionmaker
-from model import User, Phone, Department, Email, engine
+from models import User, Phone, Department, Email, engine
+from app import app
 
-app = Flask(__name__)
 Session = sessionmaker(bind=engine)
 session = Session()
 
@@ -22,9 +22,9 @@ def add_user():
 
         session.add_all([record_user, record_phone, record_email, record_department])
         session.commit()
-        return jsonify({"Success": f"User idXX has been added"})
+        return jsonify({"Success": f"User id has been added"})
     except:
-        return jsonify({"Error": f"User idXX has not been added"})
+        return jsonify({"Error": f"User id has not been added"})
 
 @app.route('/user/', methods=['GET'])
 def get_users():
