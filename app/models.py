@@ -15,13 +15,6 @@ class User(Base):
     first_name = Column(String(255))
     last_name = Column(String(255))
 
-    def __init__(self, user_id, username, password, first_name, last_name):
-        self.user_id = user_id
-        self.username = username
-        self.password = password
-        self.first_name = first_name
-        self.last_name = last_name
-
     def __repr__(self):
         return f"<User id{self.user_id} {self.username}>"
 
@@ -31,15 +24,10 @@ class Phone(Base):
     phone = Column(String(255), unique=True, nullable=False)
     user_id = Column(Integer, ForeignKey("users.user_id"))
 
-    user = relationship('User', uselist=False, backref='phone')  # Один пользователь
-
-    def __init__(self, phone_id, phone, user_id):
-        self.phone_id = phone_id
-        self.phone = phone
-        self.user_id = user_id
+    user = relationship('User', backref='phone', uselist=False)  # Один пользователь
 
     def __repr__(self):
-        return f"<User id{self.id} {self.phone}>"
+        return f"{self.phone}"
 
 class Email(Base):
     __tablename__ = 'emails'
@@ -47,15 +35,10 @@ class Email(Base):
     email = Column(String(255), unique=True, nullable=False)
     user_id = Column(Integer, ForeignKey("users.user_id"))
 
-    user = relationship('User', uselist=False, backref='email')  # Один пользователь
-
-    def __init__(self, email_id, email, user_id):
-        self.email_id = email_id
-        self.email = email
-        self.user_id = user_id
+    user = relationship('User', backref='email')  # Один пользователь
 
     def __repr__(self):
-        return f"<User id{self.id} {self.email}>"
+        return f"{self.email}"
 
 class Department(Base):
     __tablename__ = 'departments'
@@ -65,12 +48,7 @@ class Department(Base):
 
     user = relationship('User', backref='department')  # Много пользователей
 
-    def __init__(self, department_id, department, user_id):
-        self.department_id = department_id
-        self.department = department
-        self.user_id = user_id
-
     def __repr__(self):
-        return f"<User id{self.id} {self.department}>"
+        return f"{self.department}"
 
 Base.metadata.create_all(engine)

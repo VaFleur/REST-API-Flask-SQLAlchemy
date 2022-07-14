@@ -14,46 +14,63 @@ def add_user():
             username=request.json['username'],
             password=generate_password_hash(request.json['password']),
             first_name=request.json['first_name'],
-            last_name=request.json['last_name'],
+            last_name=request.json['last_name']
         )
-        record_phone = Phone(phone=request.json['phone'])
-        record_email = Email(email=request.json['email'])
-        record_department = Department(department=request.json['department'])
 
-        session.add_all([record_user, record_phone, record_email, record_department])
+        session.add(record_user)
         session.commit()
-        return jsonify({"Success": f"User id has been added"})
+
+        record_phone = Phone(
+            phone=request.json['phone'],
+            user_id=record_user.user_id
+        )
+        record_email = Email(
+            email=request.json['email'],
+            user_id=record_user.user_id
+        )
+        record_department = Department(
+            department=request.json['department'],
+            user_id=record_user.user_id
+        )
+
+        session.add_all([record_phone, record_email, record_department])
+        session.commit()
+        return jsonify({"Success": f"User id{record_user.user_id} has been added"})
     except:
-        return jsonify({"Error": f"User id has not been added"})
+        return jsonify({"Error": f"User has not been added"})
 
 @app.route('/user/', methods=['GET'])
 def get_users():
     record_objects = []
     records = session.query(User).all()
 
-    for record in records:
+    for record_user in records:
         record_object = {
-            'id': record.id,
-            'username': record.username,
-            'password': record.password,
-            'email': record.email,
-            'first_name': record.first_name,
-            'last_name': record.last_name
-        }
+        'id': record_user.user_id,
+        'username': record_user.username,
+        'password': record_user.password,
+        'first_name': record_user.first_name,
+        'last_name': record_user.last_name,
+        'phone': str(record_user.phone),
+        'email': str(record_user.email),
+        'department': str(record_user.department)
+    }
         record_objects.append(record_object)
     return jsonify(record_objects)
 
 @app.route('/user/<int:id>', methods=['GET'])
 def get_user(id):
-    record = session.query(User).get(id)
+    record_user = session.query(User).get(id)
 
     record_object = {
-        'id': record.id,
-        'username': record.username,
-        'password': record.password,
-        'email': record.email,
-        'first_name': record.first_name,
-        'last_name': record.last_name
+        'id': record_user.user_id,
+        'username': record_user.username,
+        'password': record_user.password,
+        'first_name': record_user.first_name,
+        'last_name': record_user.last_name,
+        'phone': str(record_user.phone),
+        'email': str(record_user.email),
+        'department': str(record_user.department)
     }
     return jsonify(record_object)
 
