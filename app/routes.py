@@ -1,4 +1,5 @@
 from flask import request, jsonify
+from sqlalchemy import update
 from werkzeug.security import generate_password_hash
 from sqlalchemy.orm import sessionmaker
 from models import User, Phone, Department, Email, engine
@@ -44,49 +45,79 @@ def get_users():
     record_objects = []
     records = session.query(User).all()
 
-    for record_user in records:
+    for record in records:
         record_object = {
-        'id': record_user.user_id,
-        'username': record_user.username,
-        'password': record_user.password,
-        'first_name': record_user.first_name,
-        'last_name': record_user.last_name,
-        'phone': str(record_user.phone),
-        'email': str(record_user.email),
-        'department': str(record_user.department)
-    }
+            'id': record.user_id,
+            'username': record.username,
+            'password': record.password,
+            'first_name': record.first_name,
+            'last_name': record.last_name,
+            'phone': str(record.phone),
+            'email': str(record.email),
+            'department': str(record.department)
+        }
         record_objects.append(record_object)
     return jsonify(record_objects)
 
 @app.route('/user/<int:id>', methods=['GET'])
 def get_user(id):
-    record_user = session.query(User).get(id)
+    try:
+        record = session.query(User).get(id)
 
-    record_object = {
-        'id': record_user.user_id,
-        'username': record_user.username,
-        'password': record_user.password,
-        'first_name': record_user.first_name,
-        'last_name': record_user.last_name,
-        'phone': str(record_user.phone),
-        'email': str(record_user.email),
-        'department': str(record_user.department)
-    }
-    return jsonify(record_object)
+        record_object = {
+            'id': record.user_id,
+            'username': record.username,
+            'password': record.password,
+            'first_name': record.first_name,
+            'last_name': record.last_name,
+            'phone': str(record.phone),
+            'email': str(record.email),
+            'department': str(record.department)
+        }
+        return jsonify(record_object)
+    except:
+        return jsonify({'Error': 'User does not exist'})
 
 @app.route('/user/<int:id>', methods=['PUT'])
 def update_user(id):
     try:
         record = session.query(User).get(id)
 
-        record.username = request.json['username']
-        record.password = generate_password_hash(request.json['password'])
-        record.email = request.json['email']
-        record.first_name = request.json['first_name']
-        record.last_name = request.json['last_name']
+        record_object = {
+            'username': record.username,
+            'password': record.password,
+            'first_name': record.first_name,
+            'last_name': record.last_name,
+            'phone': str(record.phone),
+            'email': str(record.email),
+            'department': str(record.department)
+        }
 
-        session.add(record)
+        new_record = request.json
+
+        for key in record_object.keys():
+            if key in new_record.keys():
+                record_object[key] = new_record[key]
+                if key == 'password':
+                    record_object[key] = generate_password_hash(new_record[key])
+            else:
+                print(f"Key {key} has not been found")
+        print(record_object)
+
+        session.execute(
+            update(User).
+            where(User.user_id == id).
+            values(username=record_object['username'],
+                   password=record_object['password'],
+                   first_name=record_object['first_name'],
+                   last_name=record_object['last_name'],
+                   phone=record_object['phone'],
+                   email=record_object['email'],
+                   department=record_object['department']
+                   )
+        )
         session.commit()
+
         return jsonify({"Success": f"User id{id} has been updated"})
     except:
         return jsonify({"Error": f"User id{id} has not been updated"})
