@@ -1,16 +1,15 @@
 from flask import request, jsonify
-from sqlalchemy import update
 from werkzeug.security import generate_password_hash
-from sqlalchemy.orm import sessionmaker
-from models import User, Phone, Department, Email, engine
+from database.models import User, Phone, Department, Email
+from database.session import session
 from app import app
 
-Session = sessionmaker(bind=engine)
-session = Session()
+
 
 @app.route('/user/', methods=['POST'])
 def add_user():
     try:
+
         record_user = User(
             username=request.json['username'],
             password=generate_password_hash(request.json['password']),
@@ -83,40 +82,67 @@ def update_user(id):
     try:
         record = session.query(User).get(id)
 
-        record_object = {
-            'username': record.username,
-            'password': record.password,
-            'first_name': record.first_name,
-            'last_name': record.last_name,
-            'phone': str(record.phone),
-            'email': str(record.email),
-            'department': str(record.department)
-        }
-
+        # вторая ссылка из гугла "sqlalchemy how to update object" https://www.tutorialspoint.com/sqlalchemy/sqlalchemy_orm_updating_objects.htm
         new_record = request.json
 
-        for key in record_object.keys():
-            if key in new_record.keys():
-                record_object[key] = new_record[key]
-                if key == 'password':
-                    record_object[key] = generate_password_hash(new_record[key])
-            else:
-                print(f"Key {key} has not been found")
-        print(record_object)
+        for key, value in new_record.items():
+            if key == "username":
+                record.username = value
+            elif key == "first_name":
+                record.first_name = value
+            ... и так далее
+            # в python3.10 для этого лучше использовать switch case (гугл в помощь)
+            ##############################################################################
+            # либо можно чуть сложнее:
 
-        session.execute(
-            update(User).
-            where(User.user_id == id).
-            values(username=record_object['username'],
-                   password=record_object['password'],
-                   first_name=record_object['first_name'],
-                   last_name=record_object['last_name'],
-                   phone=record_object['phone'],
-                   email=record_object['email'],
-                   department=record_object['department']
-                   )
-        )
+            # проверяем что такое поле существует у нашей sqlalchemy модели
+            if value in record.__dict__:
+                # если существует, перезаписываем его
+                setattr(record, value)
+            # но пока лучше не выпендриваться с атрибутами класса и сделать через if else как в примере выше
+            ##############################################################################
+
+        session.add(record)
         session.commit()
+
+
+
+
+
+        # record_object = {
+        #     'username': record.username,
+        #     'password': record.password,
+        #     'first_name': record.first_name,
+        #     'last_name': record.last_name,
+        #     'phone': str(record.phone),
+        #     'email': str(record.email),
+        #     'department': str(record.department)
+        # }
+        #
+        # new_record = request.json
+        #
+        # for key in record_object.keys():
+        #     if key in new_record.keys():
+        #         record_object[key] = new_record[key]
+        #         if key == 'password':
+        #             record_object[key] = generate_password_hash(new_record[key])
+        #     else:
+        #         print(f"Key {key} has not been found")
+        # print(record_object)
+        #
+        # session.execute(
+        #     update(User).
+        #     where(User.user_id == id).
+        #     values(username=record_object['username'],
+        #            password=record_object['password'],
+        #            first_name=record_object['first_name'],
+        #            last_name=record_object['last_name'],
+        #            phone=record_object['phone'],
+        #            email=record_object['email'],
+        #            department=record_object['department']
+        #            )
+        # )
+        # session.commit()
 
         return jsonify({"Success": f"User id{id} has been updated"})
     except:

@@ -1,11 +1,8 @@
 from sqlalchemy import Column, String, Integer, Text, ForeignKey
-from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
-from config import pg_user, pg_password, pg_host, db_name
 
 Base = declarative_base()
-engine = create_engine(f'postgresql+psycopg2://{pg_user}:{pg_password}@{pg_host}/{db_name}')
 
 class User(Base):
     __tablename__ = 'users'
@@ -51,4 +48,3 @@ class Department(Base):
     def __repr__(self):
         return f"{self.department}"
 
-Base.metadata.create_all(engine)
