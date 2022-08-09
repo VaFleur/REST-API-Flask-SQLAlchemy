@@ -4,6 +4,7 @@ from sqlalchemy.orm import relationship
 
 Base = declarative_base()
 
+
 class User(Base):
     __tablename__ = 'users'
     user_id = Column(Integer, primary_key=True, autoincrement="auto")
@@ -11,20 +12,25 @@ class User(Base):
     password = Column(Text, nullable=False)
     first_name = Column(String(255))
     last_name = Column(String(255))
-
-    def __repr__(self):
-        return f"<User id{self.user_id} {self.username}>"
-
-class Phone(Base):
-    __tablename__ = 'phones'
-    phone_id = Column(Integer, primary_key=True, autoincrement="auto")
     phone = Column(String(255), unique=True, nullable=False)
-    user_id = Column(Integer, ForeignKey("users.user_id"))
 
-    user = relationship('User', backref='phone', uselist=False)  # Один пользователь
+    email = relationship('Email', backref='User', cascade="all, delete-orphan", single_parent=True)
 
-    def __repr__(self):
-        return f"{self.phone}"
+
+class Department(Base):
+    __tablename__ = 'departments'
+    department_id = Column(Integer, primary_key=True, autoincrement="auto")
+    department = Column(String(255), nullable=False)
+    user_department = relationship('UserDepartment')
+
+
+class UserDepartment(Base):
+    __tablename__ = "user_department"
+    department_id = Column(ForeignKey("departments.department_id"), primary_key=True)
+    user_id = Column(ForeignKey("users.user_id"), primary_key=True)
+    extra_data = Column(String(50))
+    user = relationship("User")
+
 
 class Email(Base):
     __tablename__ = 'emails'
@@ -32,18 +38,3 @@ class Email(Base):
     email = Column(String(255), unique=True, nullable=False)
     user_id = Column(Integer, ForeignKey("users.user_id"))
 
-    user = relationship('User', backref='email', uselist=False)  # Один пользователь
-
-    def __repr__(self):
-        return f"{self.email}"
-
-class Department(Base):
-    __tablename__ = 'departments'
-    department_id = Column(Integer, primary_key=True, autoincrement="auto")
-    department = Column(String(255), unique=True, nullable=False)
-    user_id = Column(Integer, ForeignKey("users.user_id"))
-
-    user = relationship('User', backref='department')  # Много пользователей
-
-    def __repr__(self):
-        return f"{self.department}"
