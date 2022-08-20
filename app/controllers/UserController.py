@@ -1,12 +1,14 @@
 from database.connection import connect_to_database
 from database.models import User
 from werkzeug.security import generate_password_hash
+from flask import request
 
 session = connect_to_database()
 
 
-def add_user(data):
+def add_user():
     try:
+        data = request.json
         user = User()
         user.username = data['username']
         user.password = generate_password_hash(data['password'])
@@ -34,8 +36,9 @@ def delete_user(user_id):
         session.close()
 
 
-def update_user(user_id, data):
+def update_user(user_id):
     try:
+        data = request.json
         record = session.query(User).filter_by(id=user_id).one()
         for key, value in data.items():
             match key:

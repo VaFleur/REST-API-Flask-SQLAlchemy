@@ -1,11 +1,13 @@
+from flask import request
 from database.connection import connect_to_database
 from database.models import Department, UserDepartmentLink
 
 session = connect_to_database()
 
 
-def add_department(data):
+def add_department():
     try:
+        data = request.json
         department = Department()
         department.name = data['name']
         session.add(department)
@@ -17,8 +19,9 @@ def add_department(data):
         session.close()
 
 
-def add_user_to_department(data):
+def add_user_to_department():
     try:
+        data = request.json
         link = UserDepartmentLink()
         link.user_id = data['user_id']
         link.department_id = data['department_id']
@@ -73,8 +76,9 @@ def get_all_users_in_department(department_id):
         session.close()
 
 
-def update_department(department_id, data):
+def update_department(department_id):
     try:
+        data = request.json
         record = session.query(UserDepartmentLink).filter_by(departmnet_id=department_id).one()
         record.name = data['name']
         session.add(record)
@@ -100,9 +104,9 @@ def delete_department(department_id):
         session.close()
 
 
-def delete_user_from_department(data):
+def delete_user_from_department(user_id):
     try:
-        user_id = data['user_id']
+        data = request.json
         department_id = data['department_id']
         record = session.query(UserDepartmentLink).filter_by(department_id=department_id, user_id=user_id).one()
         session.delete(record)

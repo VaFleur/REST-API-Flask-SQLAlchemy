@@ -1,11 +1,13 @@
+from flask import request
 from database.connection import connect_to_database
 from database.models import Email
 
 session = connect_to_database()
 
 
-def add_email(data):
+def add_email():
     try:
+        data = request.json
         email = Email()
         email.adress = data['adress']
         email.user_id = data['user_id']
@@ -85,8 +87,9 @@ def get_emails_for_user(user_id):
         session.close()
 
 
-def update_email(email_id, data):
+def update_email(email_id):
     try:
+        data = request.json
         record = session.query(Email).filter_by(id=email_id).one()
         record.adress = data['adress']
         session.add(record)
