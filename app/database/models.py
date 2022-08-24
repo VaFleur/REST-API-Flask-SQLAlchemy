@@ -15,24 +15,14 @@ class User(Base):
     phone = Column(String(255), unique=True, nullable=False)
 
     emails = relationship('Email', backref='User', cascade="all, delete-orphan", single_parent=True)
-    departments = relationship('Department', secondary='user_department_link')
-
-    def serialize(self):
-        return {
-            'id': self.id,
-            'username': self.username,
-            'password': self.password,
-            'first_name': self.first_name,
-            'last_name': self.last_name,
-            'phone': self.phone
-        }
+    department = relationship('Department', secondary='user_department_link', back_populates='users')
 
 
 class Department(Base):
     __tablename__ = 'departments'
     id = Column(Integer, primary_key=True, autoincrement="auto")
     name = Column(String(255), nullable=False)
-    users = relationship('User', secondary='user_department_link')
+    users = relationship('User', secondary='user_department_link', back_populates='department')
 
 
 class UserDepartmentLink(Base):
@@ -46,4 +36,3 @@ class Email(Base):
     id = Column(Integer, primary_key=True, autoincrement="auto")
     adress = Column(String(255), unique=True, nullable=False)
     user_id = Column(Integer, ForeignKey("users.id"))
-

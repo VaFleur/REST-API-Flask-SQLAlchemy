@@ -1,7 +1,7 @@
 from database.connection import connect_to_database
 from database.models import User
 from werkzeug.security import generate_password_hash
-from flask import request
+from flask import request, jsonify
 
 session = connect_to_database()
 
@@ -17,9 +17,9 @@ def add_user():
         user.phone = data['phone']
         session.add(user)
         session.commit()
-        return print(f'User id{user.id} has been added')
+        return jsonify({"Success": f"User id{user.id} has been added"})
     except Exception as e:
-        print(e)
+        return jsonify({"Error": f"{e}"})
     finally:
         session.close()
 
@@ -29,9 +29,9 @@ def delete_user(user_id):
         record = session.query(User).filter_by(id=user_id).one()
         session.delete(record)
         session.commit()
-        print(f'User id{user_id} has been deleted')
+        return jsonify({"Success": f"User id{user_id} has been deleted"})
     except Exception as e:
-        print(e)
+        return jsonify({"Error": f"{e}"})
     finally:
         session.close()
 
@@ -54,9 +54,9 @@ def update_user(user_id):
                     record.phone = value
         session.add(record)
         session.commit()
-        print(f'User id{user_id} has been updated')
+        return jsonify({"Success": f"User id{user_id} has been updated"})
     except Exception as e:
-        print(e)
+        return jsonify({"Error": f"{e}"})
     finally:
         session.close()
 
@@ -85,9 +85,9 @@ def get_users():
     try:
         result = session.query(User).all()
         users = convert_user_results(result)
-        return users
+        return jsonify(users)
     except Exception as e:
-        print(e)
+        return jsonify({"Error": f"{e}"})
     finally:
         session.close()
 
@@ -98,6 +98,6 @@ def get_user(user_id):
         user = make_user_dict(result)
         return user
     except Exception as e:
-        print(e)
+        return jsonify({"Error": f"{e}"})
     finally:
         session.close()

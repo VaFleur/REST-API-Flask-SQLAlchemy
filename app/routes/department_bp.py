@@ -20,11 +20,11 @@ department_bp.route('/<int:department_id>', methods=['GET'])(get_all_users_in_de
 # Update department
 department_bp.route('/<int:department_id>', methods=['PUT'])(update_department)
 
-# Delete department with all users
+# Delete department
 department_bp.route('/<int:department_id>', methods=['DELETE'])(delete_department)
 
 # Delete user from department
-department_bp.route('/user/<int:user_id>', methods=['DELETE'])(delete_user_from_department)
+department_bp.route('/<int:department_id>/user/<int:user_id>', methods=['DELETE'])(delete_user_from_department)
 
 # Delete all users from department
 department_bp.route('/<int:department_id>/all', methods=['DELETE'])(delete_all_users_from_department)

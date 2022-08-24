@@ -11,7 +11,7 @@ email_bp.route('/', methods=['POST'])(add_email)
 email_bp.route('/user/<int:user_id>', methods=['DELETE'])(delete_all_emails)
 
 # Delete email using its ID
-email_bp.route('/<int:user_id>', methods=['DELETE'])(delete_email)
+email_bp.route('/<int:email_id>', methods=['DELETE'])(delete_email)
 
 # Get all emails
 email_bp.route('/', methods=['GET'])(get_all_emails)

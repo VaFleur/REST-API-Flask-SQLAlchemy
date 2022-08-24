@@ -1,4 +1,4 @@
-from flask import request
+from flask import request, jsonify
 from database.connection import connect_to_database
 from database.models import Department, UserDepartmentLink
 
@@ -12,9 +12,9 @@ def add_department():
         department.name = data['name']
         session.add(department)
         session.commit()
-        print(f'Department ID{department.id} has beem added')
+        return jsonify({"Success": f"Department ID{department.id} has beem added"})
     except Exception as e:
-        print(e)
+        return jsonify({"Error": f"{e}"})
     finally:
         session.close()
 
@@ -27,9 +27,9 @@ def add_user_to_department():
         link.department_id = data['department_id']
         session.add(link)
         session.commit()
-        print(f'User ID{link.user_id} has been added to department ID{link.department_id}')
+        return jsonify({"Success": f"User ID{link.user_id} has been added to department ID{link.department_id}"})
     except Exception as e:
-        print(e)
+        return jsonify({"Error": f"{e}"})
     finally:
         session.close()
 
@@ -54,16 +54,16 @@ def get_all_departments():
     try:
         result = session.query(Department).all()
         departments = convert_department_results(result)
-        return departments
+        return jsonify(departments)
     except Exception as e:
-        print(e)
+        return jsonify({"Error": f"{e}"})
     finally:
         session.close()
 
 
 def get_all_users_in_department(department_id):
     try:
-        result = session.query(UserDepartmentLink).filter_by(departmnet_id=department_id).all()
+        result = session.query(UserDepartmentLink).filter_by(department_id=department_id).all()
         user_ids = [record.user_id for record in result]
         department_users = {
             'department_id': department_id,
@@ -71,7 +71,7 @@ def get_all_users_in_department(department_id):
         }
         return department_users
     except Exception as e:
-        print(e)
+        return jsonify({"Error": f"{e}"})
     finally:
         session.close()
 
@@ -79,52 +79,52 @@ def get_all_users_in_department(department_id):
 def update_department(department_id):
     try:
         data = request.json
-        record = session.query(UserDepartmentLink).filter_by(departmnet_id=department_id).one()
+        record = session.query(Department).filter_by(id=department_id).one()
         record.name = data['name']
         session.add(record)
         session.commit()
-        print(f'Department {department_id} has been renamed')
+        return jsonify({"Success": f"Department {department_id} has been renamed"})
     except Exception as e:
-        print(e)
+        return jsonify({"Error": f"{e}"})
     finally:
         session.close()
 
 
 def delete_department(department_id):
     try:
-        record_department = session.query(Department).filter_by(id=department_id).one()
-        record_link = session.query(UserDepartmentLink).filter_by(department_id=department_id).all()
-        session.delete(record_department)
-        session.delete(record_link)
+        result_department = session.query(Department).filter_by(id=department_id).one()
+        session.delete(result_department)
+        result_link = session.query(UserDepartmentLink).filter_by(department_id=department_id).all()
+        for record in result_link:
+            session.delete(record)
         session.commit()
-        print(f'Department ID{department_id} has been deleted')
+        return jsonify({"Success": f"Department ID{department_id} has been deleted"})
     except Exception as e:
-        print(e)
+        return jsonify({"Error": f"{e}"})
     finally:
         session.close()
 
 
-def delete_user_from_department(user_id):
+def delete_user_from_department(department_id, user_id):
     try:
-        data = request.json
-        department_id = data['department_id']
         record = session.query(UserDepartmentLink).filter_by(department_id=department_id, user_id=user_id).one()
         session.delete(record)
         session.commit()
-        print(f'User ID{user_id} has been deleted from department ID{department_id}')
+        return jsonify({"Success": f"User ID{user_id} has been deleted from department ID{department_id}"})
     except Exception as e:
-        print(e)
+        return jsonify({"Error": f"{e}"})
     finally:
         session.close()
 
 
 def delete_all_users_from_department(department_id):
     try:
-        record = session.query(UserDepartmentLink).filter_by(department_id=department_id).all()
-        session.delete(record)
+        result = session.query(UserDepartmentLink).filter_by(department_id=department_id).all()
+        for record in result:
+            session.delete(record)
         session.commit()
-        print(f'All users has been deleted from department ID{department_id}')
+        return jsonify({"Success": f"All users has been deleted from department ID{department_id}"})
     except Exception as e:
-        print(e)
+        return jsonify({"Error": f"{e}"})
     finally:
         session.close()

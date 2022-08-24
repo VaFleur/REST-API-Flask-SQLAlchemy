@@ -1,4 +1,4 @@
-from flask import request
+from flask import request, jsonify
 from database.connection import connect_to_database
 from database.models import Email
 
@@ -13,21 +13,22 @@ def add_email():
         email.user_id = data['user_id']
         session.add(email)
         session.commit()
-        print(f'Email for user ID{email.user_id} has been added')
+        return jsonify({"Success": f"Email for user ID{email.user_id} has been added"})
     except Exception as e:
-        print(e)
+        return jsonify({"Error": f"{e}"})
     finally:
         session.close()
 
 
 def delete_all_emails(user_id):
     try:
-        record = session.query(Email).filter_by(user_id=user_id).all()
-        session.delete(record)
+        result = session.query(Email).filter_by(user_id=user_id).all()
+        for record in result:
+            session.delete(record)
         session.commit()
-        print(f'All email adresses for user ID{user_id} has been deleted')
+        return jsonify({"Success": f"All email adresses for user ID{user_id} has been deleted"})
     except Exception as e:
-        print(e)
+        return jsonify({"Error": f"{e}"})
     finally:
         session.close()
 
@@ -37,9 +38,9 @@ def delete_email(email_id):
         record = session.query(Email).filter_by(id=email_id).one()
         session.delete(record)
         session.commit()
-        print(f'Email ID{email_id} has been added')
+        return jsonify({"Success": f"Email ID{email_id} has been deleted"})
     except Exception as e:
-        print(e)
+        return jsonify({"Error": f"{e}"})
     finally:
         session.close()
 
@@ -65,9 +66,9 @@ def get_all_emails():
     try:
         result = session.query(Email).all()
         emails = convert_email_results(result)
-        return emails
+        return jsonify(emails)
     except Exception as e:
-        print(e)
+        return jsonify({"Error": f"{e}"})
     finally:
         session.close()
 
@@ -75,14 +76,16 @@ def get_all_emails():
 def get_emails_for_user(user_id):
     try:
         result = session.query(Email).filter_by(user_id=user_id).all()
-        emails = [record.adress for record in result]
+        adresses = [record.adress for record in result]
+        ids = [record.id for record in result]
+        emails = dict(zip(ids, adresses))
         user_emails = {
             'user_id': user_id,
             'user_emails': emails
         }
         return user_emails
     except Exception as e:
-        print(e)
+        return jsonify({"Error": f"{e}"})
     finally:
         session.close()
 
@@ -94,8 +97,8 @@ def update_email(email_id):
         record.adress = data['adress']
         session.add(record)
         session.commit()
-        print(f'Email ID{email_id} has been updated')
+        return jsonify({"Success": f"Email ID{email_id} has been updated"})
     except Exception as e:
-        print(e)
+        return jsonify({"Error": f"{e}"})
     finally:
         session.close()
