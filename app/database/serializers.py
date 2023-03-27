@@ -1,6 +1,6 @@
 
 
-def serialize_user(result):
+def serialize_user(result) -> list:
     users = []
     for record in result:
         user = {
@@ -15,7 +15,7 @@ def serialize_user(result):
     return users
 
 
-def serialize_email(result):
+def serialize_email(result) -> list:
     emails = []
     for record in result:
         email = {
@@ -27,7 +27,7 @@ def serialize_email(result):
     return emails
 
 
-def serialize_department(result):
+def serialize_department(result) -> list:
     departments = []
     for record in result:
         department = {

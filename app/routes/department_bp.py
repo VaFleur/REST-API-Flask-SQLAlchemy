@@ -1,5 +1,5 @@
 from flask import Blueprint
-from controllers.DepartmentController import add_department, add_user_to_department, get_all_departments,\
+from controllers.department_controller import add_department, add_user_to_department, get_all_departments,\
     get_all_users_in_department, update_department, delete_department, delete_all_users_from_department,\
     delete_user_from_department
 

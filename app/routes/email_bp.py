@@ -1,5 +1,5 @@
 from flask import Blueprint
-from controllers.EmailController import add_email, delete_all_emails, delete_email, get_all_emails,\
+from controllers.email_controller import add_email, delete_all_emails, delete_email, get_all_emails,\
     get_emails_for_user, update_email
 
 email_bp = Blueprint('email_bp', __name__)
