@@ -10,10 +10,10 @@ class AuthMiddleware:
         self.app = app
 
     def __call__(self, environ, start_response):
-        # Говнокодить сюда
+        # кодить сюда
         request = Request(environ)
         response = Response(start_response)
-        # Конец говнокода
+        # Конец кода
         return self.app(environ, start_response)
 
     @staticmethod
