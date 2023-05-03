@@ -1,65 +1,203 @@
-from flask import request, jsonify
-from bussines_logic.user_bussines_logic import add_user, delete_user, update_user, get_all_users, get_user
+from validators.user_validator import UserValidator
+from flask import Response, Request
+from base import RequestData, BaseController
+from business_models.users_business_model import UserBusinessModel
+from utils import ResponseSerializer
 
 
-def add_user_controller():
-    try:
-        user_data = request.json
-        user = add_user(user_data)
+class UserController(BaseController):
+    @classmethod
+    def get_by_id(cls, request: Request) -> Response:
+        """
+                @api {get} /users/{id} Get user by id
+                @apiName UsersGetByID
+                @apiGroup Users
+                @apiDescription Get user by id if exists else 400
+                @apiSuccessExample response body example
+                {
+                  "data": {
+                    "id": 2,
+                    "model_type": "users",
+                    "attributes": {
+                      "id": "2",
+                      "first_name": "admin",
+                      "last_name": "admin",
+                      "phone": "88005553535",
+                      "created_at": "2023-04-24 17:14:08",
+                      "created_by": "1",
+                      "updated_at": "2023-04-24 17:14:08",
+                      "updated_by": "1",
+                      "deleted_at": null,
+                      "deleted_by": null
+                    }
+                  },
+                  "included": {}
+                }
+                """
+        return super(UserController, cls).get_by_id(request)
 
-        if user is not None:
-            return jsonify({"Success": f"User id{user.id} has been added"})
-        else:
-            return jsonify({"Error": "Cannot create user"})
+    @classmethod
+    def get(cls, request: Request) -> Response:
+        """
+               @api {get} /users Get users array
+               @apiName UsersGet
+               @apiGroup Users
+               @apiDescription Get all users in array
+               @apiSuccessExample response body example
+               {
+                 "data": [
+                   {
+                     "id": 1,
+                     "model_type": "users",
+                     "attributes": {
+                       "id": "1",
+                       "first_name": "admin",
+                       "last_name": "admin",
+                       "phone": "88005553535",
+                       "created_at": "2023-04-24 17:14:08",
+                       "created_by": "1",
+                       "updated_at": "2023-04-24 17:14:08",
+                       "updated_by": "1",
+                       "deleted_at": null,
+                       "deleted_by": null
+                     }
+                   },
+                   {
+                     "id": 2,
+                     "model_type": "users",
+                     "attributes": {
+                       "id": "2",
+                       "first_name": "user",
+                       "last_name": "user",
+                       "phone": "89116664646",
+                       "created_at": "2023-04-24 17:14:08",
+                       "created_by": "1",
+                       "updated_at": "2023-04-24 17:14:08",
+                       "updated_by": "1",
+                       "deleted_at": null,
+                       "deleted_by": null
+                     }
+                   }
+                 ],
+                 "included": {}
+               }
+               """
+        return super(UserController, cls).get(request)
 
-    except Exception as e:
-        return jsonify({"Error": f"{e}"})
+    @classmethod
+    def post(cls, request: Request) -> Response:
+        """
+                @api {post} /users Crate new user
+                @apiName UsersCreate
+                @apiGroup Users
+                @apiDescription Create new users
+                @apiExample json request body example
+                {
+                  "data": {
+                    "attributes": {
+                      "first_name": "Vasily",
+                      "last_name": "Petrov",
+                      "phone": "88005553535"
+                      "username": "PetrovVasya",
+                      "password": "qwerty123"
+                    }
+                  }
+                }
+                @apiSuccessExample response body example
+                {
+                  "data": {
+                    "id": 4,
+                    "model_type": "users",
+                    "attributes": {
+                      "id": "4",
+                      "first_name": "Vasily",
+                      "last_name": "Petrov",
+                      "phone": "88005553535",
+                      "created_at": "2023-04-24 17:14:08",
+                      "created_by": "2",
+                      "updated_at": "2023-04-24 17:14:08",
+                      "updated_by": null,
+                      "deleted_at": null,
+                      "deleted_by": null
+                    }
+                  },
+                  "included": {}
+                }
+                """
+        request_data = RequestData.create(request)
+        UserValidator.post(request_data)
+        bm = UserBusinessModel(request_data)
+        entity = bm.create()
+        return ResponseSerializer().serialize_object(entity).response
 
+    @classmethod
+    def put(cls, request: Request) -> Response:
+        """
+                @api {put} /users/{id} Update users
+                @apiName UsersUpdate
+                @apiGroup Users
+                @apiDescription Update user by id
+                @apiExample json request body example
+                {
+                  "data": {
+                    "attributes": {
+                      "first_name": "Petr"
+                    }
+                  }
+                }
+                @apiSuccessExample response body example
+                {
+                  "data": {
+                    "id": 4,
+                    "model_type": "users",
+                    "attributes": {
+                      "id": "4",
+                      "first_name": "Petr",
+                      "last_name": "Petrov",
+                      "phone": "88005553535",
+                      "created_at": "2023-04-24 17:14:08",
+                      "created_by": "2",
+                      "updated_at": "2023-04-24 17:34:49",
+                      "updated_by": "2",
+                      "deleted_at": null,
+                      "deleted_by": null
+                    }
+                  },
+                  "included": {}
+                }
+                """
+        request_data = RequestData.create(request)
+        UserValidator.put(request_data)
+        bm = UserBusinessModel(request_data)
+        entity = bm.update()
+        return ResponseSerializer().serialize_object(entity).response
 
-def delete_user_controller(user_id: int):
-    try:
-        delete_user(user_id)
-        return jsonify({"Success": f"User id{user_id} has been deleted"})
-
-    except Exception as e:
-        return jsonify({"Error": f"{e}"})
-
-
-def update_user_controller(user_id):
-    try:
-        user_data = request.json
-        user = update_user(user_data, user_id)
-
-        if user is not None:
-            return jsonify({"Success": f"User id{user_id} has been updated"})
-        else:
-            return jsonify({"Error": "Cannot update user"})
-
-    except Exception as e:
-        return jsonify({"Error": f"{e}"})
-
-
-def get_all_users_controller():
-    try:
-        users = get_all_users()
-
-        if users is not None:
-            return jsonify(users)
-        else:
-            return jsonify({"Error": "Cannot get user data"})
-
-    except Exception as e:
-        return jsonify({"Error": f"{e}"})
-
-
-def get_user_controller(user_id):
-    try:
-        user = get_user(user_id)
-
-        if user is not None:
-            return jsonify(user)
-        else:
-            return jsonify({"Error": "Cannot get user data"})
-
-    except Exception as e:
-        return jsonify({"Error": f"{e}"})
+    @classmethod
+    def delete(cls, request: Request) -> Response:
+        """
+                @api {delete} /users/{id} Delete user
+                @apiName UsersDelete
+                @apiGroup Users
+                @apiDescription Delete user by id
+                @apiSuccessExample response body example
+                {
+                  "data": {
+                    "id": 4,
+                    "model_type": "users",
+                    "attributes": {
+                      "id": "4",
+                      "first_name": "Petr",
+                      "last_name": "Petrov",
+                      "phone": "88005553535",
+                      "created_at": "2023-04-24 17:14:08",
+                      "created_by": "2",
+                      "updated_at": "2023-04-24 17:34:49",
+                      "updated_by": "2",
+                      "deleted_at": "2023-04-24 17:40:02",
+                      "deleted_by": "2"
+                    }
+                  },
+                  "included": {}
+                }
+                """
+        return super(UserController, cls).delete(request)

@@ -1,16 +1,28 @@
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy import create_engine
-from app.config import pg_user, pg_password, pg_host, db_name
+from flask import Flask
+from sqlalchemy.engine.url import URL
+from config import config
 
 
-def connect_to_database():
-    engine = create_engine(f'postgresql+psycopg2://{pg_user}:{pg_password}@{pg_host}/{db_name}')
-    Session = sessionmaker(bind=engine)
-    session = Session()
-    return session
+class PGContextSession:
+    def __int__(self):
+        self.__session_instance: Session = None
 
+    def __enter__(self) -> Session:
+        self.__session_instance = self.__sessionmaker()
+        return self.__session_instance
 
-def create_all_tables():
-    engine = create_engine(f'postgresql+psycopg2://{pg_user}:{pg_password}@{pg_host}/{db_name}')
-    from app.database.models import Base
-    Base.metadata.create_all(engine)
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.__session_instance.close()
+
+    @classmethod
+    def setup(cls, app: Flask):
+        cls.__engine = create_engine(URL(**config["postgres"]))
+        cls.__sessionmaker = sessionmaker(
+            bind=cls.__engine,
+            autoflush=False,
+            autocommit=False,
+            expire_on_commit=False,
+            class_=Session
+        )
