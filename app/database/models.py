@@ -1,8 +1,9 @@
-from sqlalchemy import Column, String, Integer, ForeignKey
+from sqlalchemy import ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
-from database import MixinCRUD
+from sqlalchemy.orm import relationship, Mapped, mapped_column
+from database.mixin import MixinCRUD
 from hashlib import sha1
+from typing import List
 
 __all__ = [
     "Base",
@@ -19,14 +20,15 @@ class User(Base, MixinCRUD):
     __tablename__ = 'users'
     _hidden = {"password", "username"}
 
-    id = Column(Integer, primary_key=True, autoincrement="auto")
-    username = Column(String, unique=True, nullable=False)
-    password = Column(String, nullable=False)
-    first_name = Column(String, nullable=False)
-    last_name = Column(String, nullable=False)
-    phone = Column(String, unique=True, nullable=False)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    username: Mapped[str] = mapped_column(unique=True, nullable=False)
+    password: Mapped[str] = mapped_column(nullable=False)
+    first_name: Mapped[str] = mapped_column(nullable=False)
+    last_name: Mapped[str] = mapped_column(nullable=False)
+    phone: Mapped[str] = mapped_column(unique=True, nullable=False)
 
-    department = relationship("UserDepartment", back_populates='users')
+    emails: Mapped[List["Email"]] = relationship(back_populates="user")
+    department: Mapped["UserDepartment"] = relationship(back_populates="users")
 
     @staticmethod
     def get_password_hash(password: str) -> str:
@@ -35,31 +37,31 @@ class User(Base, MixinCRUD):
         return hasher.hexdigest()
 
 
-class Email(Base, MixinCRUD):
-    __tablename__ = 'emails'
-
-    id = Column(Integer, primary_key=True, autoincrement="auto")
-    adress = Column(String, unique=True, nullable=False)
-    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
-
-    user = relationship('User', foreign_keys=[user_id], backref="emails")
-
-
 class Department(Base, MixinCRUD):
     __tablename__ = 'departments'
 
-    id = Column(Integer, primary_key=True, autoincrement="auto")
-    name = Column(String, nullable=False)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(nullable=False)
 
-    users = relationship("UserDepartment", back_populates='department')
+    users: Mapped[List["UserDepartment"]] = relationship(back_populates="department")
 
 
 class UserDepartment(Base, MixinCRUD):
     __tablename__ = "users_departments"
 
-    id = Column(Integer, primary_key=True, autoincrement="auto")
-    department_id = Column(Integer, ForeignKey("departments.id"), nullable=False)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    department_id: Mapped[int] = mapped_column(ForeignKey("departments.id"), nullable=False)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
 
-    user = relationship('User', foreign_keys=[user_id], back_populates="department")
-    department = relationship("Department", foreign_keys=[department_id], back_populates="users")
+    department: Mapped["Department"] = relationship(back_populates="users", foreign_keys=[department_id])
+    users: Mapped["User"] = relationship(back_populates="department", foreign_keys=[user_id])
+
+
+class Email(Base, MixinCRUD):
+    __tablename__ = 'emails'
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    address: Mapped[str] = mapped_column(unique=True, nullable=False)
+    user_id: Mapped[int] = mapped_column(ForeignKey('users.id'), nullable=False)
+
+    user: Mapped["User"] = relationship(back_populates="emails", foreign_keys=[user_id])
