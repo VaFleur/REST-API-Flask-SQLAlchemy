@@ -1,8 +1,9 @@
 from validators.user_validator import UserValidator
 from flask import Response, Request
-from base import RequestData, BaseController
+from base.request_data import RequestData
+from base.base_controller import BaseController
 from business_models.users_business_model import UserBusinessModel
-from utils import ResponseSerializer
+from utils.serializer import ResponseSerializer
 
 
 class UserController(BaseController):

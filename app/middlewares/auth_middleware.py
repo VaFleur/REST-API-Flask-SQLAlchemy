@@ -1,12 +1,13 @@
 import base64
-from database import User, DatabaseAgent
+from database.models import User
+from database.agent import DatabaseAgent
 from sqlalchemy.orm import Session
 from flask import Response, Request
-from utils import ExecutionException
-from application import app
+from utils.custom_exception import ExecutionException
 
 
 def _get_user(nickname: str, password: str, request: Request) -> User:
+    #TODO нужно тестить
     session: Session = request.form["postgres_session"]
     filters = (
         User.nickname == nickname,
@@ -27,7 +28,6 @@ def _check_auth(cls, request: Request) -> bool:
     return False
 
 
-@app.before_request
 def auth_middleware(cls, request: Request, handler) -> Response:
     if cls._check_auth(request):
         return handler(request)

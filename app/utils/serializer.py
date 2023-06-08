@@ -1,6 +1,7 @@
 from typing import Iterable, Tuple, Optional
 from collections import defaultdict
-from database import Base as SQLAlchemyBase, ModelMapper
+from database.models import Base as SQLAlchemyBase
+from database.mapper import ModelMapper
 from datetime import datetime
 from flask import Response, jsonify
 

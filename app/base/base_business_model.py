@@ -1,6 +1,7 @@
 from typing import Iterable
-from base import RequestData
-from database import Base, DatabaseAgent
+from base.request_data import RequestData
+from database.models import Base
+from database.agent import DatabaseAgent
 from sqlalchemy.orm import Session
 
 

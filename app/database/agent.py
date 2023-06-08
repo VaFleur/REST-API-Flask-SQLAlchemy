@@ -1,4 +1,4 @@
-from database import Base
+from database.models import Base
 from sqlalchemy import func, select
 from typing import Iterable
 from sqlalchemy.sql.expression import BinaryExpression, Select

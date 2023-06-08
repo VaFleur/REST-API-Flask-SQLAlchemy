@@ -1,5 +1,6 @@
-from base import RequestData, BaseValidator
-from utils import ValidationUtils
+from base.request_data import RequestData
+from base.base_validator import BaseValidator
+from utils.validation_utils import ValidationUtils
 
 
 class UserValidator(BaseValidator):

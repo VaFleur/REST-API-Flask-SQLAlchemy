@@ -1,4 +1,4 @@
-from .models import *
+from database.models import *
 from typing import Optional
 from datetime import datetime
 from collections import defaultdict

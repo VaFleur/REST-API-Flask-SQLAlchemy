@@ -1,4 +1,4 @@
-from base import BaseController
+from base.base_controller import BaseController
 from flask import Request, Response
 
 

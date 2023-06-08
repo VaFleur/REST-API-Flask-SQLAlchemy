@@ -1,5 +1,5 @@
-from base import RequestData
-from utils import ValidationUtils
+from base.request_data import RequestData
+from utils.validation_utils import ValidationUtils
 
 
 class BaseValidator:

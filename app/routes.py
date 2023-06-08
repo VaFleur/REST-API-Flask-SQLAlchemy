@@ -1,6 +1,8 @@
-from controllers import EmailController, DepartmentController, UserController
-from base import BaseController
-from application import app
+from controllers.email_controller import EmailController
+from controllers.department_controller import DepartmentController
+from controllers.user_controller import UserController
+from base.base_controller import BaseController
+from flask import Flask
 
 model_controllers = [
     # users
@@ -26,16 +28,16 @@ model_controllers = [
 ]
 
 
-def register_routes(app_: app):
+def register_routes(app: Flask):
     for model_controller in model_controllers:
-        app_.add_url_rule(
+        app.add_url_rule(
             rule=model_controller["rule"],
             methods=model_controller["methods"],
             view_func=model_controller["view_func"]
         )
 
-    app_.add_url_rule(rule="/<entity_type>", methods=["GET"], view_func=BaseController.get)
-    app_.add_url_rule(rule="/<entity_type>/<id>", methods=["GET"], view_func=BaseController.get_by_id)
-    app_.add_url_rule(rule="/<entity_type>", methods=["POST"], view_func=BaseController.post)
-    app_.add_url_rule(rule="/<entity_type>/<id>", methods=["PUT"], view_func=BaseController.put)
-    app_.add_url_rule(rule="/<entity_type>/<id>", methods=["DELETE"], view_func=BaseController.delete)
+    app.add_url_rule(rule="/<entity_type>", methods=["GET"], view_func=BaseController.get)
+    app.add_url_rule(rule="/<entity_type>/<id>", methods=["GET"], view_func=BaseController.get_by_id)
+    app.add_url_rule(rule="/<entity_type>", methods=["POST"], view_func=BaseController.post)
+    app.add_url_rule(rule="/<entity_type>/<id>", methods=["PUT"], view_func=BaseController.put)
+    app.add_url_rule(rule="/<entity_type>/<id>", methods=["DELETE"], view_func=BaseController.delete)

@@ -1,10 +1,8 @@
-from application import app
 from logger import logger
-from utils import ExecutionException
+from utils.custom_exception import ExecutionException
 from flask import Response, Request, jsonify
 
 
-@app.before_request
 def error_handler_middleware(request: Request, handler) -> Response:
     try:
         return handler(request)

@@ -10,14 +10,13 @@ __all__ = [
     "User",
     "Email",
     "Department",
-    "UserDepartment"
 ]
 
 Base = declarative_base()
 
 
 class User(Base, MixinCRUD):
-    __tablename__ = 'users'
+    __tablename__ = 'user_table'
     _hidden = {"password", "username"}
 
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -26,9 +25,10 @@ class User(Base, MixinCRUD):
     first_name: Mapped[str] = mapped_column(nullable=False)
     last_name: Mapped[str] = mapped_column(nullable=False)
     phone: Mapped[str] = mapped_column(unique=True, nullable=False)
+    department_id: Mapped[int] = mapped_column(ForeignKey("department_table.id"))
 
     emails: Mapped[List["Email"]] = relationship(back_populates="user")
-    department: Mapped["UserDepartment"] = relationship(back_populates="users")
+    department: Mapped["Department"] = relationship(back_populates="users")
 
     @staticmethod
     def get_password_hash(password: str) -> str:
@@ -37,31 +37,20 @@ class User(Base, MixinCRUD):
         return hasher.hexdigest()
 
 
-class Department(Base, MixinCRUD):
-    __tablename__ = 'departments'
-
-    id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(nullable=False)
-
-    users: Mapped[List["UserDepartment"]] = relationship(back_populates="department")
-
-
-class UserDepartment(Base, MixinCRUD):
-    __tablename__ = "users_departments"
-
-    id: Mapped[int] = mapped_column(primary_key=True)
-    department_id: Mapped[int] = mapped_column(ForeignKey("departments.id"), nullable=False)
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
-
-    department: Mapped["Department"] = relationship(back_populates="users", foreign_keys=[department_id])
-    users: Mapped["User"] = relationship(back_populates="department", foreign_keys=[user_id])
-
-
 class Email(Base, MixinCRUD):
-    __tablename__ = 'emails'
+    __tablename__ = 'email_table'
 
     id: Mapped[int] = mapped_column(primary_key=True)
     address: Mapped[str] = mapped_column(unique=True, nullable=False)
-    user_id: Mapped[int] = mapped_column(ForeignKey('users.id'), nullable=False)
+    user_id: Mapped[int] = mapped_column(ForeignKey("user_table.id"))
 
-    user: Mapped["User"] = relationship(back_populates="emails", foreign_keys=[user_id])
+    user: Mapped["User"] = relationship(back_populates="emails")
+
+
+class Department(Base, MixinCRUD):
+    __tablename__ = 'department_table'
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    department: Mapped[str] = mapped_column(unique=True, nullable=False)
+
+    users: Mapped[List["User"]] = relationship(back_populates="department")

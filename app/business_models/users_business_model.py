@@ -1,5 +1,5 @@
-from database import User
-from base import BaseBusinessModel
+from database.models import User
+from base.base_business_model import BaseBusinessModel
 
 
 class UserBusinessModel(BaseBusinessModel):
