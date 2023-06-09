@@ -8,7 +8,9 @@ __all__ = ["app"]
 app = Flask(__name__)
 
 app.before_request_funcs = {"app": middleware_list}
-#TODO переписать
-app.before_first_request(PGContextSession.setup)
+
+#TODO потестить
+with app.app_context():
+    PGContextSession.setup(app)
 
 register_routes(app)

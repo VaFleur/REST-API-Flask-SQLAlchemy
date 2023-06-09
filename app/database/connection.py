@@ -18,7 +18,7 @@ class PGContextSession:
 
     @classmethod
     def setup(cls, app: Flask):
-        cls.__engine = create_engine(URL(**config["postgres"]))
+        cls.__engine = create_engine(URL.create(**config["postgres"]))
         cls.__sessionmaker = sessionmaker(
             bind=cls.__engine,
             autoflush=False,
