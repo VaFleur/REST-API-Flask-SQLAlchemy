@@ -6,6 +6,8 @@ from config import config
 
 
 class PGContextSession:
+    __engine = None
+
     def __int__(self):
         self.__session_instance: Session = None
 

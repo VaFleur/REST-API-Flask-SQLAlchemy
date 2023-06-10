@@ -9,8 +9,7 @@ app = Flask(__name__)
 
 app.before_request_funcs = {"app": middleware_list}
 
-#TODO потестить
+# TODO потестить
 with app.app_context():
     PGContextSession.setup(app)
-
-register_routes(app)
+    register_routes(app)
