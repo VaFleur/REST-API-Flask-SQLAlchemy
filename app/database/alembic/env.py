@@ -1,5 +1,5 @@
 from logging.config import fileConfig
-from database import Base
+from database.models import Base
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 from sqlalchemy.engine.url import URL
@@ -67,6 +67,7 @@ def run_migrations_online() -> None:
     """
     connectable = create_engine(URL(**app_config["postgres"]))
     with connectable.connect() as connection:
+        # TODO испарвить
         connection.run_callable(do_run_migrations)
 
 
