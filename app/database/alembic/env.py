@@ -65,10 +65,9 @@ def run_migrations_online() -> None:
     and associate a connection with the context.
 
     """
-    connectable = create_engine(URL(**app_config["postgres"]))
+    connectable = create_engine(URL.create(**app_config["postgres"]))
     with connectable.connect() as connection:
-        # TODO испарвить
-        connection.run_callable(do_run_migrations)
+        do_run_migrations(connection=connection)
 
 
 if context.is_offline_mode():

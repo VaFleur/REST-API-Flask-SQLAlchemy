@@ -17,7 +17,7 @@ if not os.path.exists(os.path.dirname(logs_path)):
 if not os.path.exists(logs_path):
     os.mknod(logs_path)
 
-logger = logging.getLogger("SteamExchangeBot")
+logger = logging.getLogger("StreamExchangeBot")
 format_str = logging.Formatter('%(asctime)s [%(levelname)s] %(filename)s: %(message)s')
 
 logger.setLevel(log_level[config["logs"]["logs_level"]])
