@@ -27,7 +27,7 @@ class MixinCRUD:
 
     @declared_attr
     def created_by(self):
-        return Column(Integer, ForeignKey("users.id"), nullable=True)
+        return Column(Integer, ForeignKey("user_table.id"), nullable=True)
 
     @declared_attr
     def updated_at(self):
@@ -35,7 +35,7 @@ class MixinCRUD:
 
     @declared_attr
     def updated_by(self):
-        return Column(Integer, ForeignKey("users.id"), nullable=True)
+        return Column(Integer, ForeignKey("user_table.id"), nullable=True)
 
     @declared_attr
     def deleted_at(self):
@@ -43,5 +43,5 @@ class MixinCRUD:
 
     @declared_attr
     def deleted_by(self):
-        return Column(Integer, ForeignKey("users.id"), nullable=True)
+        return Column(Integer, ForeignKey("user_table.id"), nullable=True)
 

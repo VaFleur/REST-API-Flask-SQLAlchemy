@@ -1,4 +1,4 @@
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from database.mixin import MixinCRUD
@@ -28,7 +28,7 @@ class User(Base, MixinCRUD):
     department_id: Mapped[int] = mapped_column(ForeignKey("department_table.id"))
 
     emails: Mapped[List["Email"]] = relationship(back_populates="user")
-    department: Mapped["Department"] = relationship(back_populates="users")
+    department: Mapped["Department"] = relationship(back_populates="users", foreign_keys=[department_id])
 
     @staticmethod
     def get_password_hash(password: str) -> str:
@@ -44,7 +44,7 @@ class Email(Base, MixinCRUD):
     address: Mapped[str] = mapped_column(unique=True, nullable=False)
     user_id: Mapped[int] = mapped_column(ForeignKey("user_table.id"))
 
-    user: Mapped["User"] = relationship(back_populates="emails")
+    user: Mapped["User"] = relationship(back_populates="emails", foreign_keys=[user_id])
 
 
 class Department(Base, MixinCRUD):
