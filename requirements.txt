@@ -16,7 +16,7 @@ MarkupSafe==2.1.2
 psycopg2-binary==2.9.6
 pyrsistent==0.19.3
 requests==2.30.0
-SQLAlchemy==2.0.15
+SQLAlchemy==2.0.17
 typing_extensions==4.6.3
 urllib3==2.0.2
 Werkzeug==2.3.4

@@ -1,5 +1,5 @@
-from controllers.email_controller import EmailController
-from controllers.department_controller import DepartmentController
+from controllers.article_controller import ArticleController
+from controllers.comment_controller import CommentController
 from controllers.user_controller import UserController
 from base.base_controller import BaseController
 from flask import Flask
@@ -12,19 +12,19 @@ model_controllers = [
     {"rule": "/users/<id>", "endpoint": "user_put", "methods": ["PUT"], "view_func": UserController.put},
     {"rule": "/users/<id>", "endpoint": "user_delete", "methods": ["DELETE"], "view_func": UserController.delete},
 
-    # departments
-    {"rule": "/departments", "endpoint": "department_get", "methods": ["GET"], "view_func": DepartmentController.get},
-    {"rule": "/departments/<id>", "endpoint": "department_get_by_id", "methods": ["GET"], "view_func": DepartmentController.get_by_id},
-    {"rule": "/departments", "endpoint": "department_post", "methods": ["POST"], "view_func": DepartmentController.post},
-    {"rule": "/departments/<id>", "endpoint": "department_put", "methods": ["PUT"], "view_func": DepartmentController.put},
-    {"rule": "/departments/<id>", "endpoint": "department_delete", "methods": ["DELETE"], "view_func": DepartmentController.delete},
+    # comments
+    {"rule": "/comments", "endpoint": "comment_get", "methods": ["GET"], "view_func": CommentController.get},
+    {"rule": "/comments/<id>", "endpoint": "comment_get_by_id", "methods": ["GET"], "view_func": CommentController.get_by_id},
+    {"rule": "/comments", "endpoint": "comment_post", "methods": ["POST"], "view_func": CommentController.post},
+    {"rule": "/comments/<id>", "endpoint": "comment_put", "methods": ["PUT"], "view_func": CommentController.put},
+    {"rule": "/comments/<id>", "endpoint": "comment_delete", "methods": ["DELETE"], "view_func": CommentController.delete},
 
-    # emails
-    {"rule": "/emails", "endpoint": "email_get", "methods": ["GET"], "view_func": EmailController.get},
-    {"rule": "/emails/<id>", "endpoint": "email_get_by_id", "methods": ["GET"], "view_func": EmailController.get_by_id},
-    {"rule": "/emails", "endpoint": "email_post", "methods": ["POST"], "view_func": EmailController.post},
-    {"rule": "/emails/<id>", "endpoint": "email_put", "methods": ["PUT"], "view_func": EmailController.put},
-    {"rule": "/emails/<id>", "endpoint": "email_delete", "methods": ["DELETE"], "view_func": EmailController.delete},
+    # articles
+    {"rule": "/articles", "endpoint": "article_get", "methods": ["GET"], "view_func": ArticleController.get},
+    {"rule": "/articles/<id>", "endpoint": "article_get_by_id", "methods": ["GET"], "view_func": ArticleController.get_by_id},
+    {"rule": "/articles", "endpoint": "article_post", "methods": ["POST"], "view_func": ArticleController.post},
+    {"rule": "/articles/<id>", "endpoint": "article_put", "methods": ["PUT"], "view_func": ArticleController.put},
+    {"rule": "/articles/<id>", "endpoint": "article_delete", "methods": ["DELETE"], "view_func": ArticleController.delete},
 ]
 
 
