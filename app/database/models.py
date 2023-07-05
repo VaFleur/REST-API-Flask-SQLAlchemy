@@ -25,7 +25,7 @@ class User(Base, MixinCRUD):
     surname = Column(String, nullable=False)
     email = Column(String, unique=True, nullable=True)
 
-    articles = relationship('Article', back_populates='user', uselist=True)
+    articles = relationship('Article', order_by='desc(Article.id)', primaryjoin='User.id == Article.user_id')
 
     @staticmethod
     def get_password_hash(password: str) -> str:
@@ -42,8 +42,7 @@ class Article(Base, MixinCRUD):
     header = Column(String, unique=True, nullable=False)
     body = Column(Text, nullable=False)
 
-    user = relationship('User', back_populates='articles', foreign_keys='article_table.user_id')
-    comments = relationship('Article', back_populates='article', uselist=True)
+    comments = relationship('Comment', order_by='desc(Comment.id)', primaryjoin='Article.id == Comment.article_id')
 
 
 class Comment(Base, MixinCRUD):
@@ -52,5 +51,3 @@ class Comment(Base, MixinCRUD):
     id = Column(Integer, primary_key=True)
     article_id = Column(Integer, ForeignKey('article_table.id'))
     body = Column(Text, nullable=False)
-
-    article = relationship('Article', back_populates='comments', foreign_keys='comment_table.article_id')
